@@ -20,7 +20,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void add(T value, int index) {
         if (index < 0 || index > size) {
-            throw new ArrayListIndexOutOfBoundsException("Index is out of Array limits");
+            throw new ArrayListIndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         if (size == array.length) {
             expand();
@@ -104,7 +104,7 @@ public class ArrayList<T> implements List<T> {
 
     public void checkSize(int index) {
         if (index < 0 || index >= size) {
-            throw new ArrayListIndexOutOfBoundsException("Index is out of Array limits");
+            throw new ArrayListIndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
     }
 
@@ -118,7 +118,7 @@ public class ArrayList<T> implements List<T> {
     public boolean contains(T value) {
         boolean isContaining = false;
         for (int i = 0; i < size; i++) {
-            if (value == null ? array[i] == null : value.equals(array[i])) {
+            if (array[i] == null ? value == null : array[i].equals(value)) {
                 isContaining = true;
                 return isContaining;
             }
