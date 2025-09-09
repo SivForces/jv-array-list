@@ -10,7 +10,9 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void add(T value) {
-        expand();
+        if (size == array.length) {
+            expand();
+        }
         array[size] = value;
         size++;
     }
@@ -69,9 +71,7 @@ public class ArrayList<T> implements List<T> {
         for (int i = 0; i < size; i++) {
             if ((array[i] == null ? element == null : array[i].equals(element))) {
                 found = true;
-                for (int j = i; j < size - 1; j++) {
-                    array[j] = array[j + 1];
-                }
+                System.arraycopy(array, i + 1, array, i, size - i - 1);
                 break;
             }
         }
@@ -117,9 +117,6 @@ public class ArrayList<T> implements List<T> {
 
     public boolean contains(T value) {
         boolean isContaining = false;
-        if (value == null) {
-            throw new NullPointerException("Cannot search null element");
-        }
         for (int i = 0; i < size; i++) {
             if (value == null ? array[i] == null : value.equals(array[i])) {
                 isContaining = true;
