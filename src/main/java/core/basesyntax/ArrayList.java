@@ -1,18 +1,16 @@
 package core.basesyntax;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class ArrayList<T> implements List<T> {
+    private static final int DEFAULT_CAPACITY = 10;
+    private static final float GROWTH_FACTOR = 1.5f;
     private int size = 0;
-    private int capacity = 10;
-    private Object[] array = new Object[capacity];
+    private Object[] array = new Object[DEFAULT_CAPACITY];
 
     @Override
     public void add(T value) {
-        if (size == array.length) {
-            expand();
-        }
+        expand();
         array[size] = value;
         size++;
     }
@@ -25,24 +23,21 @@ public class ArrayList<T> implements List<T> {
         if (size == array.length) {
             expand();
         }
-        for (int i = size; i > index; i--) {
-            array[i] = array[i - 1];
-        }
+        System.arraycopy(array, index, array, index + 1, size - index);
         array[index] = value;
         size++;
     }
 
     @Override
     public void addAll(List<T> list) {
-        if (size == array.length) {
-            expand();
-        }
-        while (array.length < size + list.size()) {
-            expand();
-        }
-        for (int i = 0; i < list.size(); i++) {
-            array[size] = list.get(i);
-            size++;
+        if (list.size() != 0) {
+            while (array.length < size + list.size()) {
+                expand();
+            }
+            for (int i = 0; i < list.size(); i++) {
+                array[size] = list.get(i);
+                size++;
+            }
         }
     }
 
@@ -62,9 +57,7 @@ public class ArrayList<T> implements List<T> {
     public T remove(int index) {
         checkSize(index);
         final T element = (T) array[index];
-        for (int i = index; i < size - 1; i++) {
-            array[i] = array[i + 1];
-        }
+        System.arraycopy(array, index + 1, array, index, size - index - 1);
         array[size - 1] = null;
         size--;
         return element;
@@ -73,8 +66,8 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(T element) {
         boolean found = false;
-        for (int i = 0; i < size - 1; i++) {
-            if (Objects.equals(array[i], element)) {
+        for (int i = 0; i < size; i++) {
+            if ((array[i] == null ? element == null : array[i].equals(element))) {
                 found = true;
                 for (int j = i; j < size - 1; j++) {
                     array[j] = array[j + 1];
@@ -82,7 +75,7 @@ public class ArrayList<T> implements List<T> {
                 break;
             }
         }
-        if (found == false) {
+        if (!found) {
             throw new NoSuchElementException("There is no such element");
         }
         array[size - 1] = null;
@@ -97,22 +90,14 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return size == 0;
     }
 
     public void expand() {
-        if (array.length == capacity) {
-            capacity += capacity / 2;
-
-            Object[] newArray = new Object[capacity];
-            for (int i = 0; i < size; i++) {
-                newArray[i] = array[i];
-            }
-
+        if (size == array.length) {
+            int newCapacity = (int)(array.length * GROWTH_FACTOR);
+            Object[] newArray = new Object[newCapacity];
+            System.arraycopy(array, 0, newArray, 0, size);
             array = newArray;
         }
     }
@@ -121,5 +106,26 @@ public class ArrayList<T> implements List<T> {
         if (index < 0 || index >= size) {
             throw new ArrayListIndexOutOfBoundsException("Index is out of Array limits");
         }
+    }
+
+    public void clear() {
+        for (int i = 0; i < size; i++) {
+            array[i] = null;
+        }
+        size = 0;
+    }
+
+    public boolean contains(T value) {
+        boolean isContaining = false;
+        if (value == null) {
+            throw new NullPointerException("Cannot search null element");
+        }
+        for (int i = 0; i < size; i++) {
+            if (value == null ? array[i] == null : value.equals(array[i])) {
+                isContaining = true;
+                return isContaining;
+            }
+        }
+        return isContaining;
     }
 }
